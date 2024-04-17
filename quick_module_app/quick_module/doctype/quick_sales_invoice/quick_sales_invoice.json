@@ -171,8 +171,6 @@
   "terms",
   "more_info_tab",
   "customer_po_details",
-  "po_no",
-  "column_break_23",
   "po_date",
   "more_info",
   "debit_to",
@@ -450,22 +448,6 @@
    "hide_days": 1,
    "hide_seconds": 1,
    "label": "Customer PO Details"
-  },
-  {
-   "allow_on_submit": 1,
-   "fieldname": "po_no",
-   "fieldtype": "Data",
-   "hide_days": 1,
-   "hide_seconds": 1,
-   "label": "Customer's Purchase Order",
-   "no_copy": 1,
-   "print_hide": 1
-  },
-  {
-   "fieldname": "column_break_23",
-   "fieldtype": "Column Break",
-   "hide_days": 1,
-   "hide_seconds": 1
   },
   {
    "allow_on_submit": 1,
@@ -1841,6 +1823,7 @@
    "collapsible": 1,
    "fieldname": "subscription_section",
    "fieldtype": "Section Break",
+   "hidden": 1,
    "hide_days": 1,
    "hide_seconds": 1,
    "label": "Subscription"
@@ -2189,7 +2172,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-04-13 18:42:57.051306",
+ "modified": "2024-04-17 10:30:52.224201",
  "modified_by": "Administrator",
  "module": "Quick-Module",
  "name": "Quick Sales Invoice",
