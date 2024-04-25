@@ -171,6 +171,8 @@
   "terms",
   "more_info_tab",
   "customer_po_details",
+  "po_no",
+  "column_break_oryp",
   "po_date",
   "more_info",
   "debit_to",
@@ -2167,12 +2169,21 @@
    "label": "Update Outstanding for Self",
    "no_copy": 1,
    "print_hide": 1
+  },
+  {
+   "fieldname": "column_break_oryp",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "po_no",
+   "fieldtype": "Data",
+   "label": "Customer's Purchase Order"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-04-17 10:30:52.224201",
+ "modified": "2024-04-25 16:50:02.928206",
  "modified_by": "Administrator",
  "module": "Quick-Module",
  "name": "Quick Sales Invoice",
