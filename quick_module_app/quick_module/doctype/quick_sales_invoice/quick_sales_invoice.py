@@ -2,6 +2,7 @@
 # For license information, please see license.txt
 
 # import frappe
+from erpnext.accounts.doctype.accounting_dimension.accounting_dimension import get_dimensions
 from frappe.model.document import Document
 
 
@@ -476,8 +477,7 @@ class QuickSalesInvoice(SellingController):
 			self.check_credit_limit()
 
 		if not cint(self.is_pos) == 1 and not self.is_return and self.status=="Submitted":
-			print("update_against_document_in_jv")
-			# self.update_against_document_in_jv()
+			self.update_against_document_in_jv()
 
 		self.update_time_sheet(self.name)
 
@@ -497,6 +497,69 @@ class QuickSalesInvoice(SellingController):
 			self.apply_loyalty_points()
 
 		self.process_common_party_accounting()
+
+	def update_against_document_in_jv(self):
+		"""
+		Links invoice and advance voucher:
+		        1. cancel advance voucher
+		        2. split into multiple rows if partially adjusted, assign against voucher
+		        3. submit advance voucher
+		"""
+		if self.doctype == "Quick Sales Invoice":
+			party_type = "Customer"
+			party = self.customer
+			party_account = self.debit_to
+			dr_or_cr = "credit_in_account_currency"
+		else:
+			party_type = "Supplier"
+			party = self.supplier
+			party_account = self.credit_to
+			dr_or_cr = "debit_in_account_currency"
+		lst = []
+		for d in self.get("advances"):
+			if flt(d.allocated_amount) > 0:
+				args = frappe._dict(
+					{
+						"voucher_type": d.reference_type,
+						"voucher_no": d.reference_name,
+						"voucher_detail_no": d.reference_row,
+						"against_voucher_type": self.doctype,
+						"against_voucher": self.name,
+						"account": party_account,
+						"party_type": party_type,
+						"party": party,
+						"is_advance": "Yes",
+						"dr_or_cr": dr_or_cr,
+						"unadjusted_amount": flt(d.advance_amount),
+						"allocated_amount": flt(d.allocated_amount),
+						"precision": d.precision("advance_amount"),
+						"exchange_rate": (
+							self.conversion_rate
+							if self.party_account_currency != self.company_currency
+							else 1
+						),
+						"grand_total": (
+							self.base_grand_total
+							if self.party_account_currency == self.company_currency
+							else self.grand_total
+						),
+						"outstanding_amount": self.outstanding_amount,
+						"difference_account": frappe.get_cached_value(
+							"Company", self.company, "exchange_gain_loss_account"
+						),
+						"exchange_gain_loss": flt(d.get("exchange_gain_loss")),
+					}
+				)
+				lst.append(args)
+		if lst:
+			from erpnext.accounts.utils import reconcile_against_document
+			# pass dimension values to utility method
+			active_dimensions = get_dimensions()[0]
+			for x in lst:
+				for dim in active_dimensions:
+					if self.get(dim.fieldname):
+						x.update({dim.fieldname: self.get(dim.fieldname)})
+			reconcile_against_document(lst, active_dimensions=active_dimensions)
 
 	def validate_pos_return(self):
 		if self.is_consolidated:
