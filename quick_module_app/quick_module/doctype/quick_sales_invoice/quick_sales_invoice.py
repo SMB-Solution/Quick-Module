@@ -476,7 +476,8 @@ class QuickSalesInvoice(SellingController):
 			self.check_credit_limit()
 
 		if not cint(self.is_pos) == 1 and not self.is_return and self.status=="Submitted":
-			self.update_against_document_in_jv()
+			print("update_against_document_in_jv")
+			# self.update_against_document_in_jv()
 
 		self.update_time_sheet(self.name)
 
